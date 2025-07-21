@@ -19,3 +19,11 @@ export type SaleTransaction = {
   date: Date;
   paymentMethod: 'Cash' | 'Card';
 };
+
+export type ReceiptTemplate = 'modern' | 'classic';
+
+export type AppSettings = {
+  currency: string;
+  receiptName: string;
+  receiptTemplate: ReceiptTemplate;
+};

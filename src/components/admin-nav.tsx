@@ -18,6 +18,7 @@ import {
   FileText,
   Home,
   LogOut,
+  Settings,
 } from "lucide-react";
 import { Logo } from "./logo";
 
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/admin/inventory", label: "Inventory", icon: Archive },
   { href: "/admin/sales", label: "Sales History", icon: LayoutGrid },
   { href: "/admin/reports", label: "Reports", icon: FileText },
+  { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
 export function AdminNav() {

@@ -1,10 +1,13 @@
 "use client"
 
-import { sales, products } from "@/lib/data";
+import { sales } from "@/lib/data";
 import { ReportTemplate } from "@/components/report-template";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
+import { useSettings } from "@/hooks/use-settings";
 
 export default function ZReportPage() {
+  const { settings, isLoaded } = useSettings();
+
   const reportData = sales.reduce((acc, sale) => {
     acc.totalSales += sale.total;
     acc.totalTransactions += 1;
@@ -25,6 +28,10 @@ export default function ZReportPage() {
     cardSales: 0,
     salesByCategory: {} as Record<string, number> 
   });
+  
+  if (!isLoaded) {
+    return <div>Loading report...</div>
+  }
 
   return (
     <ReportTemplate title="Z Report (End-of-Day)">
@@ -32,7 +39,7 @@ export default function ZReportPage() {
         <div>
           <h3 className="text-lg font-semibold border-b pb-2 mb-2">Grand Totals</h3>
           <div className="grid grid-cols-2 gap-4 text-xl">
-            <p><strong>Total Sales:</strong></p><p className="text-right font-bold">${reportData.totalSales.toFixed(2)}</p>
+            <p><strong>Total Sales:</strong></p><p className="text-right font-bold">{settings.currency} {reportData.totalSales.toFixed(2)}</p>
             <p><strong>Total Transactions:</strong></p><p className="text-right font-bold">{reportData.totalTransactions}</p>
           </div>
         </div>
@@ -40,8 +47,8 @@ export default function ZReportPage() {
         <div>
           <h3 className="text-lg font-semibold border-b pb-2 mb-2">Payment Methods</h3>
            <div className="grid grid-cols-2 gap-4">
-            <p><strong>Cash Sales:</strong></p><p className="text-right">${reportData.cashSales.toFixed(2)}</p>
-            <p><strong>Card Sales:</strong></p><p className="text-right">${reportData.cardSales.toFixed(2)}</p>
+            <p><strong>Cash Sales:</strong></p><p className="text-right">{settings.currency} {reportData.cashSales.toFixed(2)}</p>
+            <p><strong>Card Sales:</strong></p><p className="text-right">{settings.currency} {reportData.cardSales.toFixed(2)}</p>
           </div>
         </div>
         
@@ -58,14 +65,14 @@ export default function ZReportPage() {
               {Object.entries(reportData.salesByCategory).map(([category, total]) => (
                 <TableRow key={category}>
                   <TableCell className="capitalize">{category}</TableCell>
-                  <TableCell className="text-right">${total.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">{settings.currency} {total.toFixed(2)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
             <TableFooter>
               <TableRow>
                 <TableCell className="font-bold">Total</TableCell>
-                <TableCell className="text-right font-bold">${reportData.totalSales.toFixed(2)}</TableCell>
+                <TableCell className="text-right font-bold">{settings.currency} {reportData.totalSales.toFixed(2)}</TableCell>
               </TableRow>
             </TableFooter>
           </Table>

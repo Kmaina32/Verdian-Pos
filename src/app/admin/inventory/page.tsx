@@ -31,11 +31,13 @@ import { products as initialProducts } from "@/lib/data";
 import type { Product } from "@/lib/types";
 import { ProductForm } from "./product-form";
 import Image from "next/image";
+import { useSettings } from "@/hooks/use-settings";
 
 export default function InventoryPage() {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(undefined);
+  const { settings, isLoaded } = useSettings();
 
   const handleAddProduct = () => {
     setSelectedProduct(undefined);
@@ -59,6 +61,10 @@ export default function InventoryPage() {
     }
     setIsFormOpen(false);
     setSelectedProduct(undefined);
+  }
+
+  if (!isLoaded) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -118,7 +124,7 @@ export default function InventoryPage() {
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
-                  <TableCell className="text-right">${product.price.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">{settings.currency} {product.price.toFixed(2)}</TableCell>
                   <TableCell className="text-right">{product.stock}</TableCell>
                   <TableCell>
                     <DropdownMenu>

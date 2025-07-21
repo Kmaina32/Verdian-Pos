@@ -1,9 +1,12 @@
 "use client"
 
-import { sales, products } from "@/lib/data";
+import { sales } from "@/lib/data";
 import { ReportTemplate } from "@/components/report-template";
+import { useSettings } from "@/hooks/use-settings";
 
 export default function XReportPage() {
+  const { settings, isLoaded } = useSettings();
+
   const reportData = sales.reduce((acc, sale) => {
     acc.totalSales += sale.total;
     acc.totalTransactions += 1;
@@ -24,16 +27,20 @@ export default function XReportPage() {
     itemsSold: {} as Record<string, number> 
   });
 
+  if (!isLoaded) {
+    return <div>Loading report...</div>
+  }
+
   return (
     <ReportTemplate title="X Report (Mid-Day Summary)">
       <div className="space-y-6">
         <div>
           <h3 className="text-lg font-semibold border-b pb-2 mb-2">Sales Summary</h3>
           <div className="grid grid-cols-2 gap-4">
-            <p><strong>Total Sales:</strong> ${reportData.totalSales.toFixed(2)}</p>
+            <p><strong>Total Sales:</strong> {settings.currency} {reportData.totalSales.toFixed(2)}</p>
             <p><strong>Total Transactions:</strong> {reportData.totalTransactions}</p>
-            <p><strong>Cash Sales:</strong> ${reportData.cashSales.toFixed(2)}</p>
-            <p><strong>Card Sales:</strong> ${reportData.cardSales.toFixed(2)}</p>
+            <p><strong>Cash Sales:</strong> {settings.currency} {reportData.cashSales.toFixed(2)}</p>
+            <p><strong>Card Sales:</strong> {settings.currency} {reportData.cardSales.toFixed(2)}</p>
           </div>
         </div>
         <div>

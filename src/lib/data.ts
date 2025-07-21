@@ -26,28 +26,28 @@ export const sales: SaleTransaction[] = [
   { 
     id: 'SALE002', 
     items: [{ product: products[0], quantity: 2 }], 
-    total: 5.00, 
+    total: 500.00, 
     date: new Date('2023-10-27T09:45:00'),
     paymentMethod: 'Cash',
   },
   { 
     id: 'SALE003', 
     items: [{ product: products[2], quantity: 1 }, { product: products[5], quantity: 1 }, { product: products[8], quantity: 1 }], 
-    total: 8.00, 
+    total: 800.00, 
     date: new Date('2023-10-27T10:15:00'),
     paymentMethod: 'Card',
   },
   {
     id: 'SALE004',
     items: [{ product: products[9], quantity: 1 }, { product: products[3], quantity: 1 }],
-    total: 8.50,
+    total: 850.00,
     date: new Date('2023-10-27T12:05:00'),
     paymentMethod: 'Card',
   },
   {
     id: 'SALE005',
     items: [{ product: products[7], quantity: 2 }],
-    total: 8.00,
+    total: 800.00,
     date: new Date('2023-10-27T13:30:00'),
     paymentMethod: 'Cash',
   }

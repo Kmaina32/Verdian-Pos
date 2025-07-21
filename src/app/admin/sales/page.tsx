@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableBody,
@@ -9,8 +11,15 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { sales } from "@/lib/data";
+import { useSettings } from "@/hooks/use-settings";
 
 export default function SalesHistoryPage() {
+  const { settings, isLoaded } = useSettings();
+
+  if (!isLoaded) {
+    return <div>Loading...</div>
+  }
+
   return (
     <div className="p-4 md:p-8">
       <Card>
@@ -42,7 +51,7 @@ export default function SalesHistoryPage() {
                       {sale.paymentMethod}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">${sale.total.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">{settings.currency} {sale.total.toFixed(2)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
