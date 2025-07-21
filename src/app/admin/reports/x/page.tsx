@@ -3,6 +3,9 @@
 import { sales } from "@/lib/data";
 import { ReportTemplate } from "@/components/report-template";
 import { useSettings } from "@/hooks/use-settings";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+
 
 export default function XReportPage() {
   const { settings, isLoaded } = useSettings();
@@ -34,23 +37,65 @@ export default function XReportPage() {
   return (
     <ReportTemplate title="X Report (Mid-Day Summary)">
       <div className="space-y-6">
-        <div>
-          <h3 className="text-lg font-semibold border-b pb-2 mb-2">Sales Summary</h3>
-          <div className="grid grid-cols-2 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Sales Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 gap-4">
             <p><strong>Total Sales:</strong> {settings.currency} {reportData.totalSales.toFixed(2)}</p>
             <p><strong>Total Transactions:</strong> {reportData.totalTransactions}</p>
             <p><strong>Cash Sales:</strong> {settings.currency} {reportData.cashSales.toFixed(2)}</p>
             <p><strong>Card Sales:</strong> {settings.currency} {reportData.cardSales.toFixed(2)}</p>
-          </div>
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold border-b pb-2 mb-2">Items Sold</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            {Object.entries(reportData.itemsSold).map(([name, quantity]) => (
-              <li key={name}><strong>{name}:</strong> {quantity}</li>
-            ))}
-          </ul>
-        </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Items Sold</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc pl-5 space-y-1">
+              {Object.entries(reportData.itemsSold).map(([name, quantity]) => (
+                <li key={name}><strong>{name}:</strong> {quantity}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Transactions Log</CardTitle>
+            <CardDescription>A log of all sales transactions for the current period.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Time</TableHead>
+                  <TableHead>Transaction ID</TableHead>
+                  <TableHead>Payment</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sales.map((sale) => (
+                  <TableRow key={sale.id}>
+                    <TableCell>{sale.date.toLocaleTimeString()}</TableCell>
+                    <TableCell>{sale.id}</TableCell>
+                    <TableCell>{sale.paymentMethod}</TableCell>
+                    <TableCell className="text-right">{settings.currency} {sale.total.toFixed(2)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell colSpan={3} className="font-bold text-right">Total Sales</TableCell>
+                  <TableCell className="font-bold text-right">{settings.currency} {reportData.totalSales.toFixed(2)}</TableCell>
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
     </ReportTemplate>
   );

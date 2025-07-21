@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Plus, Minus, Trash2, ShoppingCart, Settings } from "lucide-react";
@@ -21,13 +21,14 @@ export default function SalesPage() {
   const { toast } = useToast();
   const { settings, isLoaded } = useSettings();
   const [receiptData, setReceiptData] = useState<{ cart: CartItem[], total: number } | null>(null);
+  
+  const receiptRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (receiptData) {
-      // Use a timeout to ensure the receipt component has rendered before printing
+    if (receiptData && receiptRef.current) {
       const timer = setTimeout(() => {
         window.print();
-        setReceiptData(null); // Clear receipt data after printing
+        setReceiptData(null); 
       }, 100);
       return () => clearTimeout(timer);
     }
@@ -68,7 +69,7 @@ export default function SalesPage() {
       });
       return;
     }
-    // In a real app, this would process payment and save the transaction
+    
     console.log("Sale completed:", { cart, total: cartTotal });
     toast({
       title: "Sale Complete!",
@@ -178,7 +179,7 @@ export default function SalesPage() {
           </div>
         </aside>
       </div>
-      {receiptData && <Receipt cart={receiptData.cart} total={receiptData.total} settings={settings} />}
+      {receiptData && <Receipt ref={receiptRef} cart={receiptData.cart} total={receiptData.total} settings={settings} />}
     </>
   );
 }
