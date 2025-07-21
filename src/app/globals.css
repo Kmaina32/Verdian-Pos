@@ -88,18 +88,19 @@ body {
 }
 
 @media print {
-  body * {
-    visibility: hidden;
+  body {
+    background-color: white;
   }
-  .printable-area, .printable-area * {
-    visibility: visible;
+  .main-content {
+    display: none;
   }
   .printable-area {
+    visibility: visible;
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
-    padding: 2rem;
+    height: auto;
   }
   .no-print {
     display: none !important;
