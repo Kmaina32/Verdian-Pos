@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { SettingsProvider } from '@/hooks/use-settings';
+import { ProductProvider } from '@/hooks/use-product-context';
 
 export const metadata: Metadata = {
   title: 'Veridian POS',
@@ -22,7 +23,9 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <SettingsProvider>
-          {children}
+          <ProductProvider>
+            {children}
+          </ProductProvider>
         </SettingsProvider>
         <Toaster />
       </body>

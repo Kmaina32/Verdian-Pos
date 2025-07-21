@@ -10,13 +10,14 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { sales } from "@/lib/data";
 import { useSettings } from "@/hooks/use-settings";
+import { useProductContext } from "@/hooks/use-product-context";
 
 export default function SalesHistoryPage() {
-  const { settings, isLoaded } = useSettings();
+  const { settings, isLoaded: settingsLoaded } = useSettings();
+  const { sales, isLoaded: productsLoaded } = useProductContext();
 
-  if (!isLoaded) {
+  if (!settingsLoaded || !productsLoaded) {
     return <div>Loading...</div>
   }
 
@@ -39,6 +40,11 @@ export default function SalesHistoryPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
+              {sales.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center h-24">No sales recorded yet.</TableCell>
+                </TableRow>
+              )}
               {sales.map((sale) => (
                 <TableRow key={sale.id}>
                   <TableCell className="font-medium">{sale.id}</TableCell>

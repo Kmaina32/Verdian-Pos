@@ -11,12 +11,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { Product } from "@/lib/types";
 import { DialogFooter } from "@/components/ui/dialog";
 
 const formSchema = z.object({
+  id: z.string().min(1, "Barcode (ID) is required."),
   name: z.string().min(2, "Name must be at least 2 characters."),
   category: z.string().min(2, "Category is required."),
   price: z.coerce.number().positive("Price must be a positive number."),
@@ -33,6 +35,7 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      id: product?.id || "",
       name: product?.name || "",
       category: product?.category || "",
       price: product?.price || 0,
@@ -43,7 +46,6 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     onSubmit({
       ...values,
-      id: product?.id || Date.now().toString(),
       imageUrl: product?.imageUrl || "https://placehold.co/400x400.png",
     });
   };
@@ -51,6 +53,20 @@ export function ProductForm({ product, onSubmit, onCancel }: ProductFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Barcode (ID)</FormLabel>
+              <FormControl>
+                <Input placeholder="123456789" {...field} disabled={!!product} />
+              </FormControl>
+              <FormDescription>This is the unique product identifier, used by barcode scanners. Cannot be changed after creation.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="name"

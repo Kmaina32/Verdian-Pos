@@ -1,14 +1,15 @@
 "use client"
 
-import { sales } from "@/lib/data";
 import { ReportTemplate } from "@/components/report-template";
 import { useSettings } from "@/hooks/use-settings";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useProductContext } from "@/hooks/use-product-context";
 
 
 export default function XReportPage() {
-  const { settings, isLoaded } = useSettings();
+  const { settings, isLoaded: settingsLoaded } = useSettings();
+  const { sales, isLoaded: productsLoaded } = useProductContext();
 
   const reportData = sales.reduce((acc, sale) => {
     acc.totalSales += sale.total;
@@ -30,7 +31,7 @@ export default function XReportPage() {
     itemsSold: {} as Record<string, number> 
   });
 
-  if (!isLoaded) {
+  if (!settingsLoaded || !productsLoaded) {
     return <div>Loading report...</div>
   }
 
@@ -54,11 +55,15 @@ export default function XReportPage() {
             <CardTitle>Items Sold</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="list-disc pl-5 space-y-1">
-              {Object.entries(reportData.itemsSold).map(([name, quantity]) => (
-                <li key={name}><strong>{name}:</strong> {quantity}</li>
-              ))}
-            </ul>
+            {Object.keys(reportData.itemsSold).length > 0 ? (
+              <ul className="list-disc pl-5 space-y-1">
+                {Object.entries(reportData.itemsSold).map(([name, quantity]) => (
+                  <li key={name}><strong>{name}:</strong> {quantity}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>No items sold yet.</p>
+            )}
           </CardContent>
         </Card>
 
@@ -78,6 +83,11 @@ export default function XReportPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
+                {sales.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center h-24">No transactions yet.</TableCell>
+                  </TableRow>
+                )}
                 {sales.map((sale) => (
                   <TableRow key={sale.id}>
                     <TableCell>{sale.date.toLocaleTimeString()}</TableCell>

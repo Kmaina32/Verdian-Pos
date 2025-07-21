@@ -26,18 +26,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
-import { products as initialProducts } from "@/lib/data";
 import type { Product } from "@/lib/types";
 import { ProductForm } from "./product-form";
 import Image from "next/image";
 import { useSettings } from "@/hooks/use-settings";
+import { useProductContext } from "@/hooks/use-product-context";
 
 export default function InventoryPage() {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(undefined);
-  const { settings, isLoaded } = useSettings();
+  const { settings, isLoaded: settingsLoaded } = useSettings();
+  const { products, addProduct, updateProduct, deleteProduct, isLoaded: productsLoaded } = useProductContext();
 
   const handleAddProduct = () => {
     setSelectedProduct(undefined);
@@ -50,20 +49,20 @@ export default function InventoryPage() {
   };
 
   const handleDeleteProduct = (productId: string) => {
-    setProducts((prev) => prev.filter((p) => p.id !== productId));
+    deleteProduct(productId);
   };
   
   const handleFormSubmit = (product: Product) => {
     if (selectedProduct) {
-      setProducts(products.map(p => p.id === product.id ? product : p));
+      updateProduct(product);
     } else {
-      setProducts([...products, { ...product, id: (products.length + 1).toString() }]);
+      addProduct({ ...product, id: product.id || Date.now().toString() });
     }
     setIsFormOpen(false);
     setSelectedProduct(undefined);
   }
 
-  if (!isLoaded) {
+  if (!settingsLoaded || !productsLoaded) {
     return <div>Loading...</div>;
   }
 
@@ -74,7 +73,7 @@ export default function InventoryPage() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Product Inventory</CardTitle>
-              <CardDescription>Manage your products and their stock levels.</CardDescription>
+              <CardDescription>Manage your products and their stock levels. The product ID is used as the barcode.</CardDescription>
             </div>
             <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
               <DialogTrigger asChild>
@@ -101,6 +100,7 @@ export default function InventoryPage() {
               <TableRow>
                 <TableHead className="w-[80px]">Image</TableHead>
                 <TableHead>Name</TableHead>
+                <TableHead>Barcode (ID)</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead className="text-right">Price</TableHead>
                 <TableHead className="text-right">Stock</TableHead>
@@ -110,6 +110,11 @@ export default function InventoryPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
+              {products.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center h-24">No products yet. Add one to get started.</TableCell>
+                </TableRow>
+              )}
               {products.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>
@@ -123,6 +128,7 @@ export default function InventoryPage() {
                     />
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell>{product.id}</TableCell>
                   <TableCell>{product.category}</TableCell>
                   <TableCell className="text-right">{settings.currency} {product.price.toFixed(2)}</TableCell>
                   <TableCell className="text-right">{product.stock}</TableCell>

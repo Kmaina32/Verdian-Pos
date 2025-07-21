@@ -1,12 +1,14 @@
 "use client"
 
-import { sales } from "@/lib/data";
 import { ReportTemplate } from "@/components/report-template";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from "@/components/ui/table";
 import { useSettings } from "@/hooks/use-settings";
+import { useProductContext } from "@/hooks/use-product-context";
 
 export default function ZReportPage() {
-  const { settings, isLoaded } = useSettings();
+  const { settings, isLoaded: settingsLoaded } = useSettings();
+  const { sales, isLoaded: productsLoaded } = useProductContext();
+
 
   const reportData = sales.reduce((acc, sale) => {
     acc.totalSales += sale.total;
@@ -29,7 +31,7 @@ export default function ZReportPage() {
     salesByCategory: {} as Record<string, number> 
   });
   
-  if (!isLoaded) {
+  if (!settingsLoaded || !productsLoaded) {
     return <div>Loading report...</div>
   }
 
@@ -62,12 +64,18 @@ export default function ZReportPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {Object.entries(reportData.salesByCategory).map(([category, total]) => (
-                <TableRow key={category}>
-                  <TableCell className="capitalize">{category}</TableCell>
-                  <TableCell className="text-right">{settings.currency} {total.toFixed(2)}</TableCell>
+              {Object.keys(reportData.salesByCategory).length > 0 ? (
+                Object.entries(reportData.salesByCategory).map(([category, total]) => (
+                  <TableRow key={category}>
+                    <TableCell className="capitalize">{category}</TableCell>
+                    <TableCell className="text-right">{settings.currency} {total.toFixed(2)}</TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={2} className="text-center h-24">No sales by category yet.</TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
             <TableFooter>
               <TableRow>
